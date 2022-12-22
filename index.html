@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="index.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins&family=Quicksand&family=Rubik+Spray+Paint&display=swap" rel="stylesheet">
+        <style> @import url('https://fonts.googleapis.com/css2?family=Poppins&family=Quicksand&family=Rubik+Spray+Paint&display=swap'); </style>
+        <link href="https://fonts.cdnfonts.com/css/cursed-timer-ulil" rel="stylesheet">
+  <title>Document</title>
+</head>
+<body>
+  <div class="main_container">
+    <div class="column1">
+        <h3 class="score_text">HOME</h3>
+        <h2 id="scorehome-el">0</h2>
+        <div class="homebuttonDiv">
+            <button id="btn-one" onclick="plusone()">+1</button>
+            <button id="btn-two" onclick="plustwo()">+2</button>
+            <button id="btn-three" onclick="plusthree()">+3</button>
+        </div>
+    </div>
+    <div class="column2">
+        <h3 class="score_text">GUEST</h3>
+        <h2 id="scoreguest-el">0</h2>
+        <div class="guestbuttonDiv">
+            <button id="btn-one" onclick="guestplusone()">+1</button>
+            <button id="btn-two" onclick="guestplustwo()">+2</button>
+            <button id="btn-three" onclick="guestplusthree()">+3</button>
+        </div>
+    </div>
+</div>
+<script src="index.js"></script>
+</html>
