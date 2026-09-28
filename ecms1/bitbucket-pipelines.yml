@@ -1,0 +1,90 @@
+image: node:22-bookworm
+
+definitions:
+  caches:
+    playwright-browsers: /ms-playwright
+
+pipelines:
+  default:
+    - step:
+        name: Validate test project
+        caches:
+          - node
+        script:
+          - npm ci
+          - npm run typecheck
+
+  custom:
+    deployment-qa:
+      - step:
+          name: ECMS deployment QA (read-only)
+          deployment: ECMS QA
+          trigger: manual
+          max-time: 60
+          caches:
+            - node
+            - playwright-browsers
+          artifacts:
+            - playwright-report/**
+            - test-results/**/*.png
+            - test-results/**/junit.xml
+          script:
+            # Required CI/CD variables: ECMS_ENVIRONMENT, ECMS_BASE_URL, ECMS_MDA, ECMS_EMAIL, ECMS_PASSWORD
+            # Optional approval account: ECMS_APPROVER_EMAIL, ECMS_APPROVER_PASSWORD
+            - export PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+            - export ECMS_ALLOW_WRITES=false
+            - export ECMS_ALLOW_NEGATIVE_AUTH=false
+            - export ECMS_CAPTURE_TRACE=false
+            - export ECMS_KNOWN_ISSUES=true
+            - export ECMS_RUN_ID=deployment-${BITBUCKET_BUILD_NUMBER}
+            - npm ci
+            - npx playwright install --with-deps chromium
+            - npm run typecheck
+            - npm run test:deploy:known-issues
+
+  branches:
+    develop:
+      - step:
+          name: ECMS develop validation
+          max-time: 45
+          caches:
+            - node
+            - playwright-browsers
+          artifacts:
+            - playwright-report/**
+            - test-results/**/*.png
+            - test-results/**/junit.xml
+          script:
+            - export PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+            - export ECMS_ALLOW_WRITES=false
+            - export ECMS_ALLOW_NEGATIVE_AUTH=false
+            - export ECMS_CAPTURE_TRACE=false
+            - export ECMS_KNOWN_ISSUES=true
+            - export ECMS_RUN_ID=develop-${BITBUCKET_BUILD_NUMBER}-smoke
+            - npm ci
+            - npx playwright install --with-deps chromium
+            - npm run typecheck
+            - npm test -- --project=chromium
+
+    master:
+      - step:
+          name: ECMS master validation
+          max-time: 60
+          caches:
+            - node
+            - playwright-browsers
+          artifacts:
+            - playwright-report/**
+            - test-results/**/*.png
+            - test-results/**/junit.xml
+          script:
+            - export PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+            - export ECMS_RUN_ID=master-${BITBUCKET_BUILD_NUMBER}
+            - export ECMS_ALLOW_WRITES=false
+            - export ECMS_ALLOW_NEGATIVE_AUTH=false
+            - export ECMS_CAPTURE_TRACE=false
+            - export ECMS_KNOWN_ISSUES=true
+            - npm ci
+            - npx playwright install --with-deps chromium
+            - npm run typecheck
+            - npm test -- --project=chromium
